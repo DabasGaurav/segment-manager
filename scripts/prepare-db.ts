@@ -21,7 +21,14 @@ async function main() {
       console.log("[prepare-db] Demo tenant present: leaving data as is.");
       return;
     }
-    await seedDemo(prisma, { bidderKey: process.env.BIDDER_SERVICE_KEY ?? "", readonlyKey: process.env.DEMO_READONLY_KEY ?? "" });
+    const bidderKey = process.env.BIDDER_SERVICE_KEY ?? "";
+    const readonlyKey = process.env.DEMO_READONLY_KEY ?? "";
+    if (bidderKey.length < 24 || readonlyKey.length < 24) {
+      // Deploy still succeeds; the app runs without demo data until the keys are set and it is redeployed.
+      console.warn("[prepare-db] BIDDER_SERVICE_KEY / DEMO_READONLY_KEY missing or shorter than 24 characters: demo tenant NOT seeded. Set them and redeploy.");
+      return;
+    }
+    await seedDemo(prisma, { bidderKey, readonlyKey });
     console.log("[prepare-db] Seeded synthetic demo tenant.");
   } finally {
     await prisma.$disconnect();

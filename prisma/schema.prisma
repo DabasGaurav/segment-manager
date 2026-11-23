@@ -1,0 +1,218 @@
+// Segment Manager data model.
+// Control-plane records only. Bid requests are never stored (data minimisation, see Phase 3 §4.6).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED") // Neon (via Vercel Storage) sets both variables
+}
+
+enum Role {
+  publisher_ops
+  reviewer
+  curator
+  admin
+}
+
+enum ServiceRole {
+  bidder_service
+  demo_readonly
+}
+
+enum GrantLevel {
+  G0
+  G1
+  G2
+  G3
+}
+
+enum UnmappedHandling {
+  drop
+  pass_raw
+}
+
+enum SignalClass {
+  CONTENT_TOPIC
+  AUDIENCE_INTEREST
+  PURCHASE_INTENT
+  DEMOGRAPHIC
+}
+
+enum ProposalStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  ABSTAINED
+  BLOCKED
+}
+
+model Tenant {
+  id          String       @id
+  name        String
+  createdAt   DateTime     @default(now())
+  publishers  Publisher[]
+  users       User[]
+  serviceKeys ServiceKey[]
+  auditEvents AuditEvent[]
+}
+
+model Publisher {
+  id                  String            @id // e.g. pub_drivedesk
+  tenantId            String
+  tenant              Tenant            @relation(fields: [tenantId], references: [id])
+  displayName         String
+  domain              String
+  integration         String // prebid | prebid_server | gam_non360
+  isSynthetic         Boolean           @default(true)
+  activeVersionNumber Int?
+  createdAt           DateTime          @default(now())
+  users               UserPublisher[]
+  imports             Import[]
+  dictionaryEntries   DictionaryEntry[]
+  proposals           Proposal[]
+  mappingVersions     MappingVersion[]
+  grant               Grant?
+
+  @@index([tenantId])
+}
+
+model User {
+  id          String          @id
+  tenantId    String
+  tenant      Tenant          @relation(fields: [tenantId], references: [id])
+  persona     String          @unique // demo persona key used by the role switcher
+  displayName String
+  role        Role
+  isDemo      Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  publishers  UserPublisher[]
+}
+
+model UserPublisher {
+  userId      String
+  publisherId String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  publisher   Publisher @relation(fields: [publisherId], references: [id], onDelete: Cascade)
+
+  @@id([userId, publisherId])
+}
+
+model ServiceKey {
+  id        String      @id
+  tenantId  String
+  tenant    Tenant      @relation(fields: [tenantId], references: [id])
+  name      String
+  role      ServiceRole
+  keyHash   String      @unique // SHA-256 of the key; the key itself is never stored
+  keyPrefix String // first characters, for display only
+  revokedAt DateTime?
+  createdAt DateTime    @default(now())
+}
+
+model Import {
+  id             String            @id @default(cuid())
+  publisherId    String
+  publisher      Publisher         @relation(fields: [publisherId], references: [id])
+  idempotencyKey String?
+  requestHash    String
+  createdBy      String
+  summary        Json
+  createdAt      DateTime          @default(now())
+  entries        DictionaryEntry[]
+
+  @@unique([publisherId, idempotencyKey])
+}
+
+model DictionaryEntry {
+  id             String      @id @default(cuid())
+  publisherId    String
+  publisher      Publisher   @relation(fields: [publisherId], references: [id])
+  importId       String
+  import         Import      @relation(fields: [importId], references: [id])
+  rawId          String
+  field          String // "content" (site/app/dooh.content.data) or "user" (user.data)
+  label          String
+  description    String?
+  declaredClass  SignalClass
+  declaredSource String? // e.g. "editorial", "reading_behaviour", "purchase_data"
+  createdAt      DateTime    @default(now())
+  proposals      Proposal[]
+
+  @@index([publisherId, field, rawId])
+}
+
+model Proposal {
+  id                String          @id @default(cuid())
+  publisherId       String
+  publisher         Publisher       @relation(fields: [publisherId], references: [id])
+  dictionaryEntryId String
+  dictionaryEntry   DictionaryEntry @relation(fields: [dictionaryEntryId], references: [id])
+  rawId             String
+  field             String
+  signalClass       SignalClass
+  status            ProposalStatus
+  method            String // L1 | L2 | L3 | L3+L4 ...
+  targetSegtax      Int?
+  targetId          String?
+  matchType         String? // exact | broader
+  matchScore        Float?
+  candidates        Json
+  reasonCodes       String[]
+  decidedBy         String?
+  decidedAt         DateTime?
+  decisionNote      String?
+  rowVersion        Int             @default(0) // optimistic concurrency for decisions
+  createdAt         DateTime        @default(now())
+
+  @@index([publisherId, status])
+}
+
+model Grant {
+  publisherId      String           @id
+  publisher        Publisher        @relation(fields: [publisherId], references: [id])
+  level            GrantLevel       @default(G0)
+  dspAllowlist     String[]
+  curatorAllowlist String[]
+  unmappedHandling UnmappedHandling @default(pass_raw)
+  consentBasisNote String?
+  attestedBy       String?
+  attestedAt       DateTime?
+  updatedAt        DateTime         @updatedAt
+}
+
+model MappingVersion {
+  id           String    @id @default(cuid())
+  publisherId  String
+  publisher    Publisher @relation(fields: [publisherId], references: [id])
+  number       Int
+  snapshot     Json
+  snapshotHash String
+  createdBy    String
+  createdAt    DateTime  @default(now())
+
+  @@unique([publisherId, number])
+}
+
+// Append-only. Never stores user.id, eids, IP addresses or consent strings.
+model AuditEvent {
+  id             String   @id @default(cuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+  publisherId    String?
+  actorType      String // user | service | system
+  actorId        String
+  action         String
+  entityType     String
+  entityId       String?
+  before         Json?
+  after          Json?
+  mappingVersion Int?
+  requestIdHash  String?
+  createdAt      DateTime @default(now())
+
+  @@index([tenantId, publisherId, createdAt])
+}

@@ -9,6 +9,7 @@ type Detection = { data_objects: Obj[]; location_errors: { path: string; reason_
 const STEP_LABEL: Record<string, [string, string]> = {
   PASS_THROUGH_SUBJECT_TO_POLICY: ["Pass through (after policy checks)", "ok"],
   TRANSLATION_CANDIDATE: ["Needs an approved mapping", "warn"],
+  UNMAPPED_HANDLING: ["Never translated (carries a value)", "warn"],
   REMOVE: ["Remove", "bad"],
 };
 

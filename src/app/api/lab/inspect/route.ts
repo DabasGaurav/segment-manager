@@ -1,4 +1,4 @@
-import { requirePrincipal } from "@/lib/auth/principal";
+import { requirePrincipal, scopedPublisher } from "@/lib/auth/principal";
 import { ApiError, handler, json, readBodyLimited, requireJsonContentType } from "@/lib/http/problem";
 import { detectSignals } from "@/lib/openrtb/detect";
 import { MAX_BODY_BYTES, parseEnvelope } from "@/lib/openrtb/envelope";
@@ -12,10 +12,11 @@ export const dynamic = "force-dynamic";
  * From Checkpoint 2 the Bid Request Lab calls /v1/resolve through a server-side route instead.
  */
 export const POST = handler(async (req, _ctx, requestId) => {
-  await requirePrincipal(req, ["publisher_ops", "reviewer", "curator", "admin"]);
+  const principal = await requirePrincipal(req, ["publisher_ops", "reviewer", "admin"]);
   requireJsonContentType(req);
   const env = parseEnvelope(await readBodyLimited(req, MAX_BODY_BYTES));
   if (!env.ok) throw new ApiError(env.status, env.code, env.detail, env.errors);
+  await scopedPublisher(principal, env.value.publisher_id); // 404 outside the caller's publishers
   let reg;
   try {
     reg = getRegistry();

@@ -14,8 +14,9 @@ test("signed-out visitors cannot run checks", async ({ page }) => {
 
 test("persona sign-in, taxonomy lookup and detection", async ({ page }) => {
   await page.goto("/");
-  await page.getByLabel("Signed in as").selectOption("ops.drivedesk");
-  await expect(page.getByLabel("Signed in as")).toHaveValue("ops.drivedesk");
+  await Promise.all([page.waitForEvent("load"), page.getByLabel("Signed in as").selectOption("admin")]);
+  await expect(page.getByLabel("Signed in as")).toHaveValue("admin");
+  await expect(page.getByRole("button", { name: "Look up" })).toBeEnabled();
 
   await page.getByRole("button", { name: "Look up" }).click();
   await expect(page.locator("pre")).toContainText('"name": "Green Vehicles"');

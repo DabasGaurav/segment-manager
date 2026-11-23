@@ -49,21 +49,38 @@ export async function authenticate(req: Request): Promise<Principal | null> {
 const MUTATING = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
 /**
- * CSRF defence for cookie-authenticated writes (in addition to SameSite=Strict):
- * the Origin header must be present and match the Host the request was sent to.
+ * CSRF defence for cookie-authenticated writes (in addition to SameSite=Strict).
+ * The Origin header must be present and match:
+ *  - one of APP_ORIGIN (comma-separated, full scheme://host[:port]) when set, else
+ *  - the scheme and host of the URL the request was actually sent to.
+ * X-Forwarded-Host is never trusted here (it is client-controllable on self-hosted setups).
  */
 export function assertSameOrigin(req: Request): void {
   if (!MUTATING.has(req.method.toUpperCase())) return;
+  const reject = (why: string) => new ApiError(403, "CSRF_ORIGIN_MISMATCH", `Cross-site write rejected (${why}).`);
   const origin = req.headers.get("origin");
-  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
-  if (!origin || !host) throw new ApiError(403, "CSRF_ORIGIN_MISMATCH", "Cross-site write rejected (missing Origin).");
-  let originHost: string;
+  if (!origin) throw reject("missing Origin");
+  let o: URL;
   try {
-    originHost = new URL(origin).host;
+    o = new URL(origin);
   } catch {
-    throw new ApiError(403, "CSRF_ORIGIN_MISMATCH", "Cross-site write rejected (bad Origin).");
+    throw reject("bad Origin");
   }
-  if (originHost !== host) throw new ApiError(403, "CSRF_ORIGIN_MISMATCH", "Cross-site write rejected.");
+  const configured = (process.env.APP_ORIGIN ?? "")
+    .split(",")
+    .map((x) => x.trim().replace(/\/$/, ""))
+    .filter(Boolean);
+  if (configured.length > 0) {
+    if (!configured.includes(o.origin)) throw reject("Origin not allowed");
+    return;
+  }
+  const self = new URL(req.url);
+  const host = req.headers.get("host") ?? self.host;
+  if (o.host !== host) throw reject("Origin host mismatch");
+  if (o.protocol !== self.protocol && !(o.protocol === "https:" && self.protocol === "http:")) {
+    // Behind TLS-terminating proxies the internal URL may say http while the browser used https.
+    throw reject("Origin scheme mismatch");
+  }
 }
 
 /**
@@ -82,12 +99,20 @@ export async function requirePrincipal(req: Request, roles?: readonly AnyRole[])
 /**
  * Tenant isolation (Phase 3.1 §A3.4). Returns the publisher only if the caller may see it.
  * Out-of-scope and non-existent publishers are indistinguishable: both are 404.
+ *
+ * Service principals are refused unless the route explicitly opts in (only /v1/resolve does,
+ * and only for the publisher named in that request). This keeps control data unreachable by keys
+ * even if a future route forgets its role list.
  */
-export async function scopedPublisher(p: Principal, publisherId: string) {
-  const notFound = new ApiError(404, "PUBLISHER_NOT_FOUND", `Publisher ${publisherId} was not found.`);
+export async function scopedPublisher(p: Principal, publisherId: string, opts: { allowService?: readonly ServiceRole[] } = {}) {
+  const notFound = new ApiError(404, "PUBLISHER_NOT_FOUND", "Publisher not found.");
   if (!/^pub_[a-z0-9_]{1,60}$/.test(publisherId)) throw notFound;
-  if (p.kind === "user" && p.role !== "admin" && !p.publisherIds.includes(publisherId)) throw notFound;
-  if (p.kind === "user" && p.role === "curator") throw notFound; // curators never see publisher internals
+  if (p.kind === "service") {
+    if (!opts.allowService?.includes(p.role)) throw notFound;
+  } else {
+    if (p.role === "curator") throw notFound; // curators never see publisher internals
+    if (p.role !== "admin" && !p.publisherIds.includes(publisherId)) throw notFound;
+  }
   const pub = await prisma.publisher.findFirst({ where: { id: publisherId, tenantId: p.tenantId } });
   if (!pub) throw notFound;
   return pub;

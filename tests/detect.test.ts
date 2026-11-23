@@ -166,9 +166,21 @@ describe("Adversarial and malformed input", () => {
     const r = detect(bidRequest({ user: { data: [{ name: "x", ext: { segtax: 4 }, segment: [{ id: "253" }, { id: "253" }] }] } }));
     expect(r.data_objects[0]!.segments[1]!.reason_codes).toContain("DUPLICATE_SEGMENT");
   });
-  it("proprietary segments carrying value are flagged for abstention", () => {
-    const r = detect(bidRequest({ user: { data: [{ name: "x", segment: [{ id: "ev_score", value: "0.9" }] }] } }));
-    expect(r.data_objects[0]!.segments[0]!.reason_codes).toEqual(["PROPRIETARY_NO_SEGTAX", "SEGMENT_HAS_VALUE"]);
+  it("proprietary segments carrying value are never translation candidates", () => {
+    const r = detect(bidRequest({ user: { data: [{ name: "x", segment: [{ id: "ev_score", value: "0.9" }, { id: "ev_plain" }] }] } }));
+    expect(r.data_objects[0]!.segments[0]).toMatchObject({
+      next_step: "UNMAPPED_HANDLING",
+      reason_codes: ["PROPRIETARY_NO_SEGTAX", "SEGMENT_HAS_VALUE", "ABSTAIN_VALUE_SEMANTICS"],
+    });
+    expect(r.data_objects[0]!.segments[1]!.next_step).toBe("TRANSLATION_CANDIDATE");
+  });
+  it("malformed containers are reported, not skipped", () => {
+    const r = detect({ id: "a", imp: [{}], site: { content: "x" }, app: 7, user: [1] });
+    expect(r.location_errors).toEqual([
+      { path: "site.content", reason_codes: ["MALFORMED_CONTAINER"] },
+      { path: "app", reason_codes: ["MALFORMED_CONTAINER"] },
+      { path: "user", reason_codes: ["MALFORMED_CONTAINER"] },
+    ]);
   });
   it("missing provider name is a warning, not a removal", () => {
     const r = detect(bidRequest({ user: { data: [{ ext: { segtax: 4 }, segment: [{ id: "253" }] }] } }));
@@ -186,7 +198,7 @@ describe("Adversarial and malformed input", () => {
       user: { data: [{ name: "c", ext: { segtax: 4 }, segment: [{ id: "253" }, { id: "nope" }] }] },
     }));
     for (const s of r.data_objects.flatMap((o) => o.segments)) {
-      expect(["PASS_THROUGH_SUBJECT_TO_POLICY", "TRANSLATION_CANDIDATE", "REMOVE"]).toContain(s.next_step);
+      expect(["PASS_THROUGH_SUBJECT_TO_POLICY", "TRANSLATION_CANDIDATE", "UNMAPPED_HANDLING", "REMOVE"]).toContain(s.next_step);
       expect(s.reason_codes.length).toBeGreaterThan(0);
     }
     expect(r.summary).toEqual({ data_objects: 3, segments: 5, valid_standard: 1, proprietary: 1, removed: 3, other_pass_through: 0 });

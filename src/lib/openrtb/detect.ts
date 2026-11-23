@@ -22,7 +22,13 @@ export type DataLocation = (typeof DATA_LOCATIONS)[number]["key"];
 export type LocationClass = "content" | "audience";
 export type SignalClass = "CONTENT_TOPIC" | "AUDIENCE_INTEREST" | "PURCHASE_INTENT" | "DEMOGRAPHIC";
 
-export type SegmentNextStep = "PASS_THROUGH_SUBJECT_TO_POLICY" | "TRANSLATION_CANDIDATE" | "REMOVE";
+/**
+ * PASS_THROUGH_SUBJECT_TO_POLICY: standard signal, forwarded unchanged if consent/sensitive checks allow.
+ * TRANSLATION_CANDIDATE: proprietary; translated only via an approved mapping, else the publisher's unmapped setting.
+ * UNMAPPED_HANDLING: proprietary but never translatable (e.g. carries `value`); only the unmapped setting applies.
+ * REMOVE: dropped.
+ */
+export type SegmentNextStep = "PASS_THROUGH_SUBJECT_TO_POLICY" | "TRANSLATION_CANDIDATE" | "UNMAPPED_HANDLING" | "REMOVE";
 export type SegmentStatus = "VALID_STANDARD" | "PROPRIETARY" | "VENDOR" | "UNVALIDATED_STANDARD" | "INVALID";
 
 export const MAX_SEGMENT_ID_LENGTH = 256;
@@ -256,9 +262,18 @@ function malformedSegment(s: Json, p: string): SegmentDetection {
 function proprietarySegment(s: Json, p: string): SegmentDetection {
   const id = readSegmentId(s);
   if (id === null) return malformedSegment(s, p);
-  const codes = ["PROPRIETARY_NO_SEGTAX"];
-  if (isPlainObject(s) && own(s, "value")) codes.push("SEGMENT_HAS_VALUE");
-  return { path: p, raw_id: id, status: "PROPRIETARY", next_step: "TRANSLATION_CANDIDATE", signal_class: null, reason_codes: codes };
+  if (isPlainObject(s) && own(s, "value")) {
+    // Value semantics are provider-specific (a score? a count?), so a mapping can't preserve them.
+    return {
+      path: p,
+      raw_id: id,
+      status: "PROPRIETARY",
+      next_step: "UNMAPPED_HANDLING",
+      signal_class: null,
+      reason_codes: ["PROPRIETARY_NO_SEGTAX", "SEGMENT_HAS_VALUE", "ABSTAIN_VALUE_SEMANTICS"],
+    };
+  }
+  return { path: p, raw_id: id, status: "PROPRIETARY", next_step: "TRANSLATION_CANDIDATE", signal_class: null, reason_codes: ["PROPRIETARY_NO_SEGTAX"] };
 }
 
 function passUnvalidated(
@@ -286,6 +301,23 @@ export function detectSignals(reg: Registry, bidRequest: Record<string, Json>): 
   const location_errors: LocationError[] = [];
 
   for (const loc of DATA_LOCATIONS) {
+    // A present-but-malformed container (e.g. site.content = "x") is reported, not skipped silently.
+    let cur: Json = bidRequest;
+    let broken: string | null = null;
+    const walked: string[] = [];
+    for (const k of loc.container) {
+      if (!isPlainObject(cur) || !own(cur, k)) break;
+      cur = cur[k];
+      walked.push(k);
+      if (!isPlainObject(cur)) {
+        broken = walked.join(".");
+        break;
+      }
+    }
+    if (broken) {
+      if (!location_errors.some((e) => e.path === broken)) location_errors.push({ path: broken, reason_codes: ["MALFORMED_CONTAINER"] });
+      continue;
+    }
     const container = getContainer(bidRequest, loc.container);
     if (!container || !own(container, "data")) continue;
     const arr = container.data;

@@ -11,8 +11,13 @@ type Ctx = { params: Promise<{ taxonomy: string; version: string; id: string }> 
  * Validates and describes one official IAB node. Any authenticated caller. Carries no tenant data.
  */
 export const GET = handler<Ctx>(async (req, ctx, requestId) => {
-  await requirePrincipal(req);
+  // People and the bidder may look up nodes. The evaluator read-only key is resolve-only (A3.3).
+  await requirePrincipal(req, ["publisher_ops", "reviewer", "curator", "admin", "bidder_service"]);
   const { taxonomy, version, id } = await ctx.params;
+  if (!/^(content|audience)$/.test(taxonomy) || !/^\d\.\d$/.test(version)) {
+    throw new ApiError(404, "TAXONOMY_NOT_FOUND", "Unknown taxonomy. Use content/2.2, content/3.0, content/3.1 or audience/1.1.");
+  }
+  if (!/^[A-Za-z0-9]{1,16}$/.test(id)) throw new ApiError(404, "NODE_NOT_FOUND", "Node not found.");
   let reg;
   try {
     reg = getRegistry();
@@ -21,10 +26,9 @@ export const GET = handler<Ctx>(async (req, ctx, requestId) => {
   }
   const { taxonomy: tax, node } = lookupNode(reg, taxonomy, version, id);
   if (!tax) {
-    const known = [...reg.byKey.keys()].join(", ");
-    throw new ApiError(404, "TAXONOMY_NOT_FOUND", `Unknown taxonomy "${taxonomy}/${version}". Known: ${known}.`);
+    throw new ApiError(404, "TAXONOMY_NOT_FOUND", "Unknown taxonomy. Use content/2.2, content/3.0, content/3.1 or audience/1.1.");
   }
-  if (!node) throw new ApiError(404, "NODE_NOT_FOUND", `ID "${id}" does not exist in ${tax.label}.`);
+  if (!node) throw new ApiError(404, "NODE_NOT_FOUND", `This ID does not exist in ${tax.label}.`);
   const parent = node.parentId ? tax.nodes.get(node.parentId) ?? null : null;
   return json(requestId, {
     taxonomy: tax.kind,

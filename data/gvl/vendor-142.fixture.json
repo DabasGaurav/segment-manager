@@ -1,0 +1,16 @@
+{
+  "source": "fixture:illustrative",
+  "note": "ILLUSTRATIVE fixture. The live IAB Global Vendor List could not be fetched from the build environment, so this entry is NOT Media.net's real declaration. Used only when data/gvl/vendor-142.live.json is absent.",
+  "vendorListVersion": null,
+  "tcfPolicyVersion": 5,
+  "vendor": {
+    "id": 142,
+    "name": "Media.net Advertising FZ-LLC (illustrative fixture)",
+    "purposes": [1, 2, 3, 4, 7],
+    "legIntPurposes": [],
+    "flexiblePurposes": [],
+    "specialPurposes": [],
+    "features": [],
+    "specialFeatures": []
+  }
+}

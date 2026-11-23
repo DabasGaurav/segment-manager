@@ -48,6 +48,8 @@ enum ProposalStatus {
   REJECTED
   ABSTAINED
   BLOCKED
+  SUPERSEDED // replaced by a newer import of the same raw ID
+  REVOKED // an approved mapping a reviewer withdrew
 }
 
 model Tenant {
@@ -139,6 +141,7 @@ model DictionaryEntry {
   description    String?
   declaredClass  SignalClass
   declaredSource String? // e.g. "editorial", "reading_behaviour", "purchase_data"
+  declaredStandard Json? // optional { segtax, id } the publisher says this entry equals
   createdAt      DateTime    @default(now())
   proposals      Proposal[]
 
@@ -149,11 +152,13 @@ model Proposal {
   id                String          @id @default(cuid())
   publisherId       String
   publisher         Publisher       @relation(fields: [publisherId], references: [id])
-  dictionaryEntryId String
-  dictionaryEntry   DictionaryEntry @relation(fields: [dictionaryEntryId], references: [id])
+  dictionaryEntryId String? // null when the ID was only seen in samples, with no dictionary entry
+  dictionaryEntry   DictionaryEntry? @relation(fields: [dictionaryEntryId], references: [id])
+  importId          String?
   rawId             String
   field             String
-  signalClass       SignalClass
+  label             String?
+  signalClass       SignalClass?
   status            ProposalStatus
   method            String // L1 | L2 | L3 | L3+L4 ...
   targetSegtax      Int?
@@ -169,6 +174,7 @@ model Proposal {
   createdAt         DateTime        @default(now())
 
   @@index([publisherId, status])
+  @@index([publisherId, field, rawId])
 }
 
 model Grant {

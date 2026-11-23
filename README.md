@@ -8,15 +8,23 @@ An internal API that checks the targeting segments publishers send in OpenRTB 2.
 
 Built as the prototype for a Media.net Associate Product Manager case (Option 3: an internal API for targeting segments). **All publishers, personas and keys are synthetic.** Nothing here describes Media.net's real systems.
 
-## Status: Checkpoint 1
+## Status: full prototype
 
 | Area | State |
 |---|---|
 | Official IAB taxonomy files (Content 2.2 / 3.0 / 3.1, Audience 1.1), SHA-256 verified at load | **Live** |
-| `GET /v1/taxonomies/{taxonomy}/{version}/nodes/{id}` | **Live** |
-| Signal detection: per Data object and per segment, following the segtax rules | **Live** (via the UI lab route; used by `/v1/resolve` from Checkpoint 2) |
-| Demo sign-in, service keys, role checks, publisher scoping, append-only audit table | **Live** |
-| Dictionary import and mapping proposals, review, grants, versions, `/v1/resolve`, TCF consent checks | Checkpoint 2 |
+| Signal detection per Data object and per segment, following the segtax rules | **Live** |
+| Dictionary import, mapping proposals (exact, synonym, lexical ranking), sensitive blocking | **Live** |
+| Human review (approve, choose another node, reclassify, leave unmapped, revoke), with separation of duties | **Live** |
+| Publisher permissions (grant level, DSP allowlist, unmapped handling) | **Live** |
+| Immutable, hashed mapping versions; activation and instant rollback | **Live** |
+| `POST /v1/resolve`: pass through, translate, keep raw or remove, with reason codes | **Live** |
+| TCF v2 consent check for vendor 142 and jurisdiction rules J1–J6 | **Live, illustrative policy** |
+| Append-only audit log with no user IDs, consent strings or IPs | **Live** |
+
+**Demo:** open the site, use the *Guided demo* (steps 1–4), or call the API with the public read-only demo key below.
+
+**Known gaps (prototype scope):** GPP strings and US state privacy rules are not parsed (US audience data is removed); the rate limiter is per server instance; DEMO_MODE sign-in has no passwords by design; the benchmark is a 62-item hand-labelled synthetic set, not production data; latency figures come from the demo server, not a production bidder.
 
 ## What is real, synthetic and illustrative
 
@@ -25,7 +33,7 @@ Built as the prototype for a Media.net Associate Product Manager case (Option 3:
   - The OpenRTB 2.6 field locations and segtax values (AdCOM 1.0 "List: Category Taxonomies").
   - All validation logic, the API, auth and storage.
 - **Synthetic:** the publishers (DriveDesk India, Metro Daily), the demo personas, and the sample bid requests.
-- **Illustrative (Checkpoint 2):** the consent and jurisdiction policy pack, and the sensitive-category list. These are **not legal advice** and make no claim of compliance.
+- **Illustrative:** the consent and jurisdiction policy pack, and the sensitive-category list. These are **not legal advice** and make no claim of compliance.
 
 ## How segtax is handled
 
@@ -44,16 +52,32 @@ Built as the prototype for a Media.net Associate Product Manager case (Option 3:
 
 An unknown ID inside a valid object removes **only that segment**.
 
-## API (so far)
+## API
 
-All errors are `application/problem+json` with a stable `code` and a `request_id`.
+All errors are `application/problem+json` with a stable `code` and a `request_id`. Paths also work under `/api/v1/...`.
+
+| Method and path | Who |
+|---|---|
+| `GET /health` | public |
+| `GET /v1/taxonomies/{content\|audience}/{version}/nodes/{id}` | signed-in persona or bidder key |
+| `POST /v1/resolve` | bidder key, or the demo read-only key (60/min) |
+| `POST /v1/publishers/{pid}/imports` (Idempotency-Key) | publisher_ops |
+| `GET /v1/publishers/{pid}/proposals?status=` | publisher_ops, reviewer, admin |
+| `POST /v1/publishers/{pid}/proposals/{id}/decision` | reviewer |
+| `GET` / `PUT /v1/publishers/{pid}/grant` | read: ops, reviewer; write: publisher_ops |
+| `GET` / `POST /v1/publishers/{pid}/mapping-versions` | read: ops, reviewer; publish: reviewer |
+| `PUT /v1/publishers/{pid}/active-version` | reviewer |
+| `GET /v1/publishers/{pid}/audit` | ops, reviewer, admin |
+| `POST /v1/demo/sessions`, `POST /v1/demo/reset` | demo only |
+
+Try the resolver with the public demo key (read-only, rate limited, synthetic data only):
 
 ```bash
-# Health (public)
-curl https://<host>/health
-
-# Taxonomy node lookup (any signed-in persona or service key)
-curl -H "Authorization: Bearer $DEMO_READONLY_KEY" https://<host>/v1/taxonomies/content/3.0/nodes/22
+curl -X POST https://segment-manager.vercel.app/v1/resolve \
+  -H "Authorization: Bearer sm_demo_221a2fb7b219328915e3e40c" -H "Content-Type: application/json" \
+  -d '{"publisher_id":"pub_metrodaily","dsp":"ttd","bid_request":{"id":"r1","imp":[{"id":"1"}],
+       "user":{"data":[{"name":"metrodaily.example","ext":{"segtax":4},"segment":[{"id":"253"},{"id":"99999"}]}]},
+       "device":{"geo":{"country":"IND"}},"regs":{"gdpr":0}}}'
 ```
 
 ## Security model
@@ -79,7 +103,7 @@ npm run dev                       # http://localhost:3000
 ## Tests
 
 ```bash
-npm test                          # Vitest: unit + API tests (needs a Postgres test DB, see tests/setup-env.ts)
+npm test                          # Vitest: 153 unit, API-flow, consent and benchmark tests (needs a Postgres test DB)
 npx playwright test --trace off   # end-to-end, against E2E_BASE_URL (default http://localhost:3000)
 ```
 

@@ -39,3 +39,7 @@ th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--bord
 .bad { color: var(--bad); font-weight: 600; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 800px) { .grid2 { grid-template-columns: 1fr; } }
+.code-chip { display: inline-block; margin: 0 4px 2px 0; padding: 1px 6px; border-radius: 4px; background: var(--code-bg); font-size: 11.5px; }
+.small { font-size: 12px; }
+h3 { font-size: 14px; margin: 12px 0 6px; }
+button:disabled { opacity: .55; cursor: default; }

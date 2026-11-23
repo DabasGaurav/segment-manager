@@ -5,7 +5,7 @@
   "description": "Segment Manager: internal API that validates, translates and policy-gates publisher targeting signals (Media.net APM case prototype).",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && tsx scripts/prepare-db.ts && next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "lint": "next lint",

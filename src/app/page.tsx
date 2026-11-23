@@ -5,6 +5,7 @@ import { getRegistry } from "@/lib/taxonomy/registry";
 import { PersonaSwitcher } from "./_components/PersonaSwitcher";
 import { DetectionLab } from "./_components/DetectionLab";
 import { TaxonomyLookup } from "./_components/TaxonomyLookup";
+import { Workflow } from "./_components/Workflow";
 
 export const dynamic = "force-dynamic";
 
@@ -46,8 +47,10 @@ export default async function Home() {
             only where consent and the publisher&apos;s permission allow it. Every decision comes with a reason code.
           </p>
           <p className="muted">
-            Checkpoint 1 build: official taxonomy loading, node lookup and signal detection are live. Mapping, review, permissions,
-            consent checks and the resolve API come next.
+            <span className="chip real">Real</span> official IAB taxonomy files, OpenRTB parsing, TCF v2 string decoding, the
+            mapping engine, database, permissions and audit log. <span className="chip synthetic">Synthetic</span> the two
+            publishers, their dictionaries, users and bid requests. <span className="chip illustrative">Illustrative</span> the
+            consent and sensitive-category rules (written from public IAB specs; not legal advice, not Media.net policy).
           </p>
         </section>
 
@@ -70,6 +73,7 @@ export default async function Home() {
           <p className="muted">Source: IAB Tech Lab Taxonomies repository on GitHub, downloaded 23 Nov 2026. segtax values from AdCOM 1.0.</p>
         </section>
 
+        <Workflow current={user?.persona ?? null} />
         <TaxonomyLookup signedIn={!!user} />
         <DetectionLab signedIn={!!user} />
       </main>

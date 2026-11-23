@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // The official IAB TSVs are read from disk at runtime; make sure they ship with every serverless function.
   outputFileTracingIncludes: {
-    "/**": ["./data/iab/**"],
+    "/**": ["./data/iab/**", "./data/gvl/**"],
   },
   // Public API paths are /v1/...; they are served by the route handlers under /api/v1/...
   async rewrites() {

@@ -39,7 +39,7 @@ export function DetectionLab({ signedIn }: { signedIn: boolean }) {
       <p className="muted">
         Paste an OpenRTB 2.6 bid request (wrapped as <code>{"{ publisher_id, dsp, bid_request }"}</code>). The detector checks every
         Data object in <code>site/app/dooh.content.data</code> and <code>user.data</code> against the official IAB files. It does not
-        change the request yet: mapping, consent and grants arrive in Checkpoint 2. <span className="chip synthetic">Synthetic samples</span>
+        change the request; the bid request lab above shows the full resolve. <span className="chip synthetic">Synthetic samples</span>
       </p>
       <div className="row" style={{ marginBottom: 8 }}>
         <select aria-label="Sample request" onChange={(e) => setText(JSON.stringify(PRESETS.find((p) => p.key === e.target.value)!.body, null, 2))}>

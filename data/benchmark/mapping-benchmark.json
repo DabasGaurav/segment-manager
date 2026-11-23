@@ -1,0 +1,506 @@
+{
+ "version": "bench-2026-11-23",
+ "note": "SYNTHETIC: hand-labelled by the prototype author for regression gating; not Media.net data.",
+ "items": [
+  {
+   "raw_id": "c01",
+   "field": "content",
+   "label": "Sedan",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Sedan",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c02",
+   "field": "content",
+   "label": "SUV",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "SUV",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c03",
+   "field": "content",
+   "label": "Hatchback",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Hatchback",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c04",
+   "field": "content",
+   "label": "Pickup Trucks",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Pickup Trucks",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c05",
+   "field": "content",
+   "label": "Green Vehicles",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Green Vehicles",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c06",
+   "field": "content",
+   "label": "Luxury Cars",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Luxury Cars",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c07",
+   "field": "content",
+   "label": "Motorcycles",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Motorcycles",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c08",
+   "field": "content",
+   "label": "Auto Insurance",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Auto Insurance",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c09",
+   "field": "content",
+   "label": "Cricket",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Cricket",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c10",
+   "field": "content",
+   "label": "Soccer",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Soccer",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c11",
+   "field": "content",
+   "label": "Smartphones",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Smartphones",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c12",
+   "field": "content",
+   "label": "Laptops",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Laptops",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c13",
+   "field": "content",
+   "label": "Air Travel",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Air Travel",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c14",
+   "field": "content",
+   "label": "Hotels and Motels",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Hotels and Motels",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c15",
+   "field": "content",
+   "label": "Desserts and Baking",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Desserts and Baking",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c16",
+   "field": "content",
+   "label": "  sedan ",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Sedan",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c17",
+   "field": "content",
+   "label": "PICKUP-TRUCKS",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Pickup Trucks",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c18",
+   "field": "content",
+   "label": "hotels & motels",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Hotels and Motels",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c19",
+   "field": "content",
+   "label": "EV",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Green Vehicles",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c20",
+   "field": "content",
+   "label": "Electric Vehicles",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Green Vehicles",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c21",
+   "field": "content",
+   "label": "Hybrid Cars",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Green Vehicles",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c22",
+   "field": "content",
+   "label": "suv",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "SUV",
+   "expect": "map"
+  },
+  {
+   "raw_id": "c23",
+   "field": "content",
+   "label": "Used car buying guides",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Auto Buying and Selling",
+   "expect": "review"
+  },
+  {
+   "raw_id": "c24",
+   "field": "content",
+   "label": "Car insurance quotes",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Auto Insurance",
+   "expect": "review"
+  },
+  {
+   "raw_id": "c25",
+   "field": "content",
+   "label": "Smartphone reviews",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Smartphones",
+   "expect": "review"
+  },
+  {
+   "raw_id": "c26",
+   "field": "content",
+   "label": "Budget travel tips",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Travel",
+   "expect": "review"
+  },
+  {
+   "raw_id": "c27",
+   "field": "content",
+   "label": "Classic car restoration",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Classic Cars",
+   "expect": "review"
+  },
+  {
+   "raw_id": "c28",
+   "field": "content",
+   "label": "Auto safety ratings",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": "Auto Safety",
+   "expect": "review"
+  },
+  {
+   "raw_id": "c29",
+   "field": "content",
+   "label": "Misc",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": null,
+   "expect": "abstain"
+  },
+  {
+   "raw_id": "c30",
+   "field": "content",
+   "label": "Section 7B",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": null,
+   "expect": "abstain"
+  },
+  {
+   "raw_id": "c31",
+   "field": "content",
+   "label": "zz_test",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": null,
+   "expect": "abstain"
+  },
+  {
+   "raw_id": "c32",
+   "field": "content",
+   "label": "General",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": null,
+   "expect": "abstain"
+  },
+  {
+   "raw_id": "c33",
+   "field": "content",
+   "label": "Diabetes",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": null,
+   "expect": "blocked"
+  },
+  {
+   "raw_id": "c34",
+   "field": "content",
+   "label": "Cancer treatment news",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": null,
+   "expect": "blocked"
+  },
+  {
+   "raw_id": "c35",
+   "field": "content",
+   "label": "Religion",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": null,
+   "expect": "blocked"
+  },
+  {
+   "raw_id": "c36",
+   "field": "content",
+   "label": "Mental health",
+   "declared_class": "CONTENT_TOPIC",
+   "expect_target": null,
+   "expect": "blocked"
+  },
+  {
+   "raw_id": "a01",
+   "field": "user",
+   "label": "Green Vehicles",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": "Green Vehicles",
+   "expect": "map"
+  },
+  {
+   "raw_id": "a02",
+   "field": "user",
+   "label": "Luxury Cars",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": "Luxury Cars",
+   "expect": "map"
+  },
+  {
+   "raw_id": "a03",
+   "field": "user",
+   "label": "Cooking",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": "Cooking",
+   "expect": "map"
+  },
+  {
+   "raw_id": "a04",
+   "field": "user",
+   "label": "Dogs",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": "Dogs",
+   "expect": "map"
+  },
+  {
+   "raw_id": "a05",
+   "field": "user",
+   "label": "Cats",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": "Cats",
+   "expect": "map"
+  },
+  {
+   "raw_id": "a06",
+   "field": "user",
+   "label": "Gardening",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": "Gardening",
+   "expect": "map"
+  },
+  {
+   "raw_id": "a07",
+   "field": "user",
+   "label": "Personal Investing",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": "Personal Investing",
+   "expect": "map"
+  },
+  {
+   "raw_id": "a08",
+   "field": "user",
+   "label": "Vegan Diets",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": "Vegan Diets",
+   "expect": "map"
+  },
+  {
+   "raw_id": "a09",
+   "field": "user",
+   "label": "Smart Home",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": "Smart Home",
+   "expect": "map"
+  },
+  {
+   "raw_id": "a10",
+   "field": "user",
+   "label": "Retirement Planning",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": "Retirement Planning",
+   "expect": "map"
+  },
+  {
+   "raw_id": "a11",
+   "field": "user",
+   "label": "EV enthusiasts",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": "Green Vehicles",
+   "expect": "review"
+  },
+  {
+   "raw_id": "a12",
+   "field": "user",
+   "label": "Electric cars",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": "Green Vehicles",
+   "expect": "map"
+  },
+  {
+   "raw_id": "a13",
+   "field": "user",
+   "label": "Home improvement DIY",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": "Home Improvement",
+   "expect": "review"
+  },
+  {
+   "raw_id": "a14",
+   "field": "user",
+   "label": "Classic car fans",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": "Classic Cars",
+   "expect": "review"
+  },
+  {
+   "raw_id": "a15",
+   "field": "user",
+   "label": "Misc readers",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": null,
+   "expect": "abstain"
+  },
+  {
+   "raw_id": "a16",
+   "field": "user",
+   "label": "Segment 4471",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": null,
+   "expect": "abstain"
+  },
+  {
+   "raw_id": "a17",
+   "field": "user",
+   "label": "Diabetes readers",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": null,
+   "expect": "blocked"
+  },
+  {
+   "raw_id": "a18",
+   "field": "user",
+   "label": "Pregnancy",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": null,
+   "expect": "blocked"
+  },
+  {
+   "raw_id": "a19",
+   "field": "user",
+   "label": "Kids under 13",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": null,
+   "expect": "blocked"
+  },
+  {
+   "raw_id": "a20",
+   "field": "user",
+   "label": "Sexual health",
+   "declared_class": "AUDIENCE_INTEREST",
+   "expect_target": null,
+   "expect": "blocked"
+  },
+  {
+   "raw_id": "p01",
+   "field": "user",
+   "label": "EV purchase intent",
+   "declared_class": "PURCHASE_INTENT",
+   "expect_target": null,
+   "expect": "intent"
+  },
+  {
+   "raw_id": "p02",
+   "field": "user",
+   "label": "Electric car buyers",
+   "declared_class": "PURCHASE_INTENT",
+   "expect_target": null,
+   "expect": "intent",
+   "declared_source": "page_views"
+  },
+  {
+   "raw_id": "p03",
+   "field": "user",
+   "label": "Green Vehicles",
+   "declared_class": "PURCHASE_INTENT",
+   "expect_target": null,
+   "expect": "intent",
+   "declared_source": "test_drive_booking"
+  },
+  {
+   "raw_id": "p04",
+   "field": "user",
+   "label": "Luxury Cars",
+   "declared_class": "PURCHASE_INTENT",
+   "expect_target": null,
+   "expect": "intent",
+   "declared_source": "transaction"
+  },
+  {
+   "raw_id": "p05",
+   "field": "user",
+   "label": "SUV shoppers",
+   "declared_class": "PURCHASE_INTENT",
+   "expect_target": null,
+   "expect": "intent",
+   "declared_source": "lead_form"
+  },
+  {
+   "raw_id": "p06",
+   "field": "user",
+   "label": "Car loans",
+   "declared_class": "PURCHASE_INTENT",
+   "expect_target": null,
+   "expect": "intent"
+  }
+ ]
+}

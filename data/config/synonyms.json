@@ -1,0 +1,13 @@
+{
+  "version": "syn-2026-11-23",
+  "note": "Reviewed synonym table (seed). Each entry maps a publisher term to an official node name. 'broader' means the node is wider than the term, so matches are flagged LOSSY_BROADER_MATCH and always go to review.",
+  "entries": [
+    { "term": "ev", "node_name": "Green Vehicles", "relation": "broader", "added_by": "seed", "reason": "No Electric Vehicle node exists in Content 3.x or Audience 1.1; Green Vehicles is the closest wider node." },
+    { "term": "evs", "node_name": "Green Vehicles", "relation": "broader", "added_by": "seed", "reason": "Plural of ev." },
+    { "term": "electric vehicles", "node_name": "Green Vehicles", "relation": "broader", "added_by": "seed", "reason": "Same as ev." },
+    { "term": "electric cars", "node_name": "Green Vehicles", "relation": "broader", "added_by": "seed", "reason": "Same as ev." },
+    { "term": "hybrid cars", "node_name": "Green Vehicles", "relation": "broader", "added_by": "seed", "reason": "Hybrids fall under Green Vehicles." },
+    { "term": "suv", "node_name": "SUV", "relation": "exact", "added_by": "seed", "reason": "Abbreviation of the node name." },
+    { "term": "sedans", "node_name": "Sedan", "relation": "exact", "added_by": "seed", "reason": "Plural of the node name." }
+  ]
+}

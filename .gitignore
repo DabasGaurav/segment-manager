@@ -8,3 +8,4 @@ coverage/
 next-env.d.ts
 playwright-report/
 test-results/
+data/gvl/vendor-142.live.json

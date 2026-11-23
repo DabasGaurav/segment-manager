@@ -1,0 +1,2 @@
+# Official IAB files must stay byte-identical so their SHA-256 checksums keep matching.
+data/iab/*.tsv -text
